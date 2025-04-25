@@ -30,6 +30,9 @@ var flipped: bool = false:
 var pivot: float = 0.0:
 	set = _set_pivot
 
+# Customization properties
+var character_customization: Dictionary = {}
+
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var hand_offset: Node2D = $HandOffset
 @onready var hand_pivot: Node2D = $HandOffset/HandPivot
@@ -47,6 +50,38 @@ func _ready() -> void:
 		equiped_weapon_left = left_hand_spot.get_child(0)
 		equiped_weapon_right.hand.type = hand_type
 		equiped_weapon_right.hand.side = Hand.Sides.LEFT
+	
+	# Apply customization if this is a human character
+	apply_customization()
+
+
+func apply_customization() -> void:
+	if sprite_frames == "human" and character_customization.size() > 0:
+		# Apply gender and age customization
+		var gender = character_customization.get("gender", 0) # Default to male
+		var age = character_customization.get("age", 1) # Default to teen
+		
+		# Create sprite path identifier based on gender and age
+		var gender_str = "male" if gender == 0 else "female"
+		var age_str = "adult"
+		
+		match age:
+			0: age_str = "child"
+			1: age_str = "teen"
+			2: age_str = "adult"
+			
+		# Try to load the appropriate sprite frames based on customization
+		var custom_sprite_frames_path = "res://source/common/resources/builtin/sprite_frames/human_%s_%s.tres" % [gender_str, age_str]
+		
+		if ResourceLoader.exists(custom_sprite_frames_path):
+			print("Loading custom sprite frames: %s" % custom_sprite_frames_path)
+			animated_sprite.sprite_frames = ResourceLoader.load(custom_sprite_frames_path)
+		else:
+			# Fall back to default human sprite frames if specific ones don't exist
+			print("Custom sprite frames not found for %s_%s, using default human sprites" % [gender_str, age_str])
+			var default_path = "res://source/common/resources/builtin/sprite_frames/human.tres"
+			if ResourceLoader.exists(default_path):
+				animated_sprite.sprite_frames = ResourceLoader.load(default_path)
 
 
 func change_weapon(weapon_path: String, _side: bool = true) -> void:

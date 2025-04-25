@@ -15,6 +15,8 @@
 [ext_resource type="Resource" uid="uid://c51jc44s7nw01" path="res://source/common/resources/custom/character/character_collection/rogue.tres" id="12_5dck6"]
 [ext_resource type="Script" uid="uid://dxa4rdqj1ukwb" path="res://source/client/gateway/ui/components/account_info.gd" id="13_i2c6x"]
 [ext_resource type="Resource" uid="uid://7ha2uyyv6r5e" path="res://source/common/resources/custom/character/character_collection/wizard.tres" id="13_rinhs"]
+[ext_resource type="Resource" uid="uid://c6lsfjv75kjph" path="res://source/common/resources/custom/character/character_collection/human.tres" id="14_x7y1p"]
+[ext_resource type="PackedScene" uid="uid://bixoc38iuwhxb" path="res://source/client/gateway/ui/components/character_creation/human_customization_panel.tscn" id="15_fym21"]
 
 [node name="GatewayUI" type="Control"]
 layout_mode = 3
@@ -420,6 +422,10 @@ character_class = ExtResource("12_5dck6")
 layout_mode = 2
 character_class = ExtResource("13_rinhs")
 
+[node name="Button4" parent="CharacterCreation/CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer" instance=ExtResource("10_kgh0o")]
+layout_mode = 2
+character_class = ExtResource("14_x7y1p")
+
 [node name="VBoxContainer2" type="VBoxContainer" parent="CharacterCreation/CenterContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 20
@@ -455,6 +461,9 @@ placeholder_text = "Character name"
 [node name="Button" type="Button" parent="CharacterCreation/CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer"]
 layout_mode = 2
 text = "RNG"
+
+[node name="HumanCustomizationPanel" parent="CharacterCreation/CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer2" instance=ExtResource("15_fym21")]
+layout_mode = 2
 
 [node name="PanelContainer" type="PanelContainer" parent="CharacterCreation/CenterContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2

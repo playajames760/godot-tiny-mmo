@@ -26,7 +26,7 @@ var just_teleported: bool = false:
 
 func _init() -> void:
 	sync_state = {"T" = 0.0}
-	group = Group.PLAYER
+	add_to_group("PLAYER")
 
 
 func _set_character_class(new_class: String):

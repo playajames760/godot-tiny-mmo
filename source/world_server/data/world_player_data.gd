@@ -33,9 +33,16 @@ func create_player_character(username: String, character_data: Dictionary) -> in
 	next_player_id += 1
 	var player_id: int = next_player_id
 	var player_character := PlayerResource.new()
+	
+	# Extract customization data if available
+	var customization = {}
+	if character_data.has("customization"):
+		customization = character_data["customization"]
+	
 	player_character.init(
 		player_id, username,
-		character_data["name"], character_data["class"]
+		character_data["name"], character_data["class"],
+		customization
 	)
 	players[player_id] = player_character
 	if accounts.has(username):
@@ -55,6 +62,7 @@ func get_account_characters(account_name: String) -> Dictionary:
 				data[player_id] = {
 					"name": player_character.display_name,
 					"class": player_character.character_class,
-					"level": player_character.level
+					"level": player_character.level,
+					"customization": player_character.customization
 				}
 	return data

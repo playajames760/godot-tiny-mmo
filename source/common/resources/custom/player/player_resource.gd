@@ -10,6 +10,7 @@ extends Resource
 
 @export var golds: int = 0
 @export var inventory: Dictionary = {}
+@export var customization: Dictionary = {}
 
 @export var level: int = 0
 
@@ -20,9 +21,11 @@ func init(
 	_player_id: int,
 	_account_name: String,
 	_display_name: String = display_name,
-	_character_class: String = character_class
+	_character_class: String = character_class,
+	_customization: Dictionary = {}
 ) -> void:
 	player_id = _player_id
 	account_name = _account_name
 	display_name = _display_name
 	character_class = _character_class
+	customization = _customization
