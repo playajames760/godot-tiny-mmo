@@ -1,21 +1,21 @@
 class_name HumanCustomizationPanel
 extends VBoxContainer
 
-const HumanCustomization = preload("res://source/common/resources/custom/character/human_customization.gd")
+const HumanCustomizationClass = preload("res://source/common/resources/custom/character/human_customization.gd")
 
-signal customization_changed(customization: HumanCustomization)
+signal customization_changed(customization: HumanCustomizationClass)
 
-var customization: HumanCustomization = HumanCustomization.new()
+var customization: HumanCustomizationClass = HumanCustomizationClass.new()
 
 @onready var gender_buttons = {
-	$GenderSection/GenderOptions/MaleButton: HumanCustomization.Gender.MALE,
-	$GenderSection/GenderOptions/FemaleButton: HumanCustomization.Gender.FEMALE
+	$GenderSection/GenderOptions/MaleButton: HumanCustomizationClass.Gender.MALE,
+	$GenderSection/GenderOptions/FemaleButton: HumanCustomizationClass.Gender.FEMALE
 }
 
 @onready var age_buttons = {
-	$AgeSection/AgeOptions/ChildButton: HumanCustomization.Age.CHILD,
-	$AgeSection/AgeOptions/TeenButton: HumanCustomization.Age.TEEN,
-	$AgeSection/AgeOptions/AdultButton: HumanCustomization.Age.ADULT
+	$AgeSection/AgeOptions/ChildButton: HumanCustomizationClass.Age.CHILD,
+	$AgeSection/AgeOptions/TeenButton: HumanCustomizationClass.Age.TEEN,
+	$AgeSection/AgeOptions/AdultButton: HumanCustomizationClass.Age.ADULT
 }
 
 func _ready() -> void:
@@ -48,5 +48,5 @@ func _on_age_button_toggled(toggled_on: bool, button: Button) -> void:
 		emit_signal("customization_changed", customization)
 
 
-func get_customization() -> HumanCustomization:
+func get_customization() -> HumanCustomizationClass:
 	return customization 

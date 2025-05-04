@@ -11,10 +11,12 @@ var human_customization: HumanCustomization = null
 @onready var class_selection_container: VBoxContainer = $CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer
 @onready var character_preview: AnimatedSprite2D = $CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer2/CenterContainer/Control/AnimatedSprite2D
 @onready var username_edit: LineEdit = $CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer/LineEdit
-@onready var create_character_button: Button = $CenterContainer/VBoxContainer/CreateCharacterButton
+@onready var create_character_button: Button = $CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer2/CreateCharacterButton
 @onready var human_customization_panel: HumanCustomizationPanel = $CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HumanCustomizationPanel
 
-@onready var result_message_label: Label = $CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer2/ResultMessageLabel
+@onready var result_message_panel: PanelContainer = $CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer2/ResultMessagePanel
+@onready var result_message_label: Label = $CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer2/ResultMessagePanel/VBoxContainer/ResultMessageLabel
+@onready var continue_button: Button = $CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer2/ResultMessagePanel/VBoxContainer/ContinueButton
 
 
 func _ready() -> void:
@@ -22,6 +24,10 @@ func _ready() -> void:
 		func():
 			if visible:
 				default_selection.grab_focus.call_deferred()
+				# Ensure the button is in the right place for the UI
+				if create_character_button:
+					create_character_button.show()
+					create_character_button.custom_minimum_size = Vector2(200, 50)
 	)
 	
 	if default_selection:
@@ -29,7 +35,17 @@ func _ready() -> void:
 		selected_button = default_selection
 		selected_character_class = default_selection.character_class
 	
+	create_character_button.connect("pressed", _on_create_character_button_pressed)
 	create_character_button.disabled = true
+	# Ensure create button is visible
+	create_character_button.show()
+	
+	# Hide the result panel initially
+	result_message_panel.hide()
+	
+	# Connect continue button
+	continue_button.pressed.connect(_on_continue_button_pressed)
+	
 	update_character_preview()
 	
 	var buttons: Array[Button]
@@ -58,6 +74,12 @@ func update_character_preview() -> void:
 			if not human_customization:
 				human_customization = human_customization_panel.get_customization()
 			update_human_preview()
+			
+			# Ensure the Create Character button is visible
+			var button = $CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer2/CreateCharacterButton
+			if button:
+				button.show()
+				button.custom_minimum_size.y = 50
 		else:
 			human_customization_panel.hide()
 			human_customization = null
@@ -144,30 +166,51 @@ func _on_rng_button_pressed() -> void:
 
 
 func _on_line_edit_text_changed(new_text: String) -> void:
-	if (
-		new_text.length() > 2
-		and new_text.length() < 14
-		#Banword check? (should be on server anyway)
-		and not new_text.contains("guest")
-	):
-		create_character_button.disabled = false
+	# Simpler validation to ensure button is enabled
+	create_character_button.disabled = new_text.length() <= 2 or new_text.length() >= 14 or new_text.contains("guest")
+	
+	# For debugging
+	if create_character_button.disabled:
+		print("Create button disabled: Invalid character name")
 	else:
-		create_character_button.disabled = true
+		print("Create button enabled: Valid character name")
+
+
+func _on_continue_button_pressed() -> void:
+	# Return to character selection screen
+	gateway.request_player_characters(gateway.world_id)
+	visible = false
+	gateway.ui.switch_to_component("CharacterSelection")
 
 
 func _on_create_character_button_pressed() -> void:
 	create_character_button.disabled = true
-	gateway.player_character_creation_result_received.connect(
-		func(result_code: int):
-			var message := "Creation successful."
-			if result_code < 0:
-				message = GatewayClient.get_error_message(abs(result_code))
-			result_message_label.text = message
-			await get_tree().create_timer(0.5).timeout
-			if result_code != OK:
-				create_character_button.disabled = false,
-		ConnectFlags.CONNECT_ONE_SHOT
-	)
+	# Define the callback function
+	var callback = func(result_code: int):
+		var message := "Creation successful!"
+		var success := true
+		
+		if result_code < 0:
+			message = GatewayClient.get_error_message(abs(result_code))
+			success = false
+			result_message_label.add_theme_color_override("font_color", Color(0.8, 0, 0, 1))
+		else:
+			result_message_label.add_theme_color_override("font_color", Color(0, 0.8, 0, 1))
+		
+		result_message_label.text = message
+		result_message_panel.show()
+		
+		if success:
+			# Show continue button
+			continue_button.show()
+			continue_button.grab_focus()
+		else:
+			# Allow another attempt
+			create_character_button.disabled = false
+			continue_button.hide()
+	
+	# Connect the callback
+	gateway.player_character_creation_result_received.connect(callback, ConnectFlags.CONNECT_ONE_SHOT)
 	
 	var character_data = {
 		"name": username_edit.text,

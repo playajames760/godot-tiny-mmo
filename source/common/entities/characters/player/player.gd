@@ -29,11 +29,34 @@ func _init() -> void:
 	add_to_group("PLAYER")
 
 
+func _ready() -> void:
+	super()
+	# Check if character sprite frames have directional animations
+	if animated_sprite.sprite_frames:
+		var has_directional = false
+		for anim_name in ["idle_up", "idle_down", "idle_left", "idle_right", "run_up", "run_down", "run_left", "run_right"]:
+			if animated_sprite.sprite_frames.has_animation(anim_name):
+				has_directional = true
+				break
+		
+		use_directional_animations = has_directional
+
+
 func _set_character_class(new_class: String):
 	character_resource = ResourceLoader.load(
 		"res://source/common/resources/custom/character/character_collection/" + new_class + ".tres")
 	animated_sprite.sprite_frames = character_resource.character_sprite
 	character_class = new_class
+	
+	# Check if new sprite frames have directional animations
+	if animated_sprite.sprite_frames:
+		var has_directional = false
+		for anim_name in ["idle_up", "idle_down", "idle_left", "idle_right", "run_up", "run_down", "run_left", "run_right"]:
+			if animated_sprite.sprite_frames.has_animation(anim_name):
+				has_directional = true
+				break
+		
+		use_directional_animations = has_directional
 
 
 func _set_display_name(new_name: String) -> void:

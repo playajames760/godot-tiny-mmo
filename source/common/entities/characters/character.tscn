@@ -16,8 +16,7 @@ script = ExtResource("1_uqmoo")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -2)
 sprite_frames = ExtResource("2_vbaud")
-animation = &"run"
-frame_progress = 0.761661
+animation = &"idle_down"
 speed_scale = 1.5
 offset = Vector2(0, -30)
 
@@ -26,6 +25,7 @@ position = Vector2(0, -2)
 shape = SubResource("RectangleShape2D_3w1m3")
 
 [node name="HandOffset" type="Node2D" parent="."]
+visible = false
 position = Vector2(0, -10)
 
 [node name="HandPivot" type="Node2D" parent="HandOffset"]

@@ -19,6 +19,8 @@ var state: String = "idle"
 
 func _ready() -> void:
 	super()
+	# Enable directional animations if needed
+	use_directional_animations = true
 
 
 func _physics_process(delta: float) -> void:
@@ -30,6 +32,11 @@ func _physics_process(delta: float) -> void:
 
 func move() -> void:
 	velocity = input_direction * speed
+	
+	# Update direction based on movement
+	if input_direction.length() > 0:
+		update_direction_from_velocity(input_direction)
+	
 	move_and_slide()
 
 
@@ -45,7 +52,6 @@ func check_inputs() -> void:
 func update_animation(delta: float) -> void:
 	flipped = (mouse.position.x < global_position.x)
 	update_hand_pivot(delta)
-
 
 func update_hand_pivot(delta: float) -> void:
 	if action_input:
@@ -67,6 +73,7 @@ func define_sync_state() -> void:
 		"position": get_global_position(),
 		"flipped": flipped,
 		"anim": anim,
+		"direction": direction,
 		"pivot": snappedf(hand_pivot.rotation, 0.05)
 	}
 

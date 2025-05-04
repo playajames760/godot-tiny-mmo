@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://b75u8dbglxgyb"]
+[gd_scene load_steps=18 format=3 uid="uid://b75u8dbglxgyb"]
 
 [ext_resource type="Script" uid="uid://biy338spedu1n" path="res://source/client/gateway/ui/gateway_ui.gd" id="1_sp1hu"]
 [ext_resource type="Script" uid="uid://bjqunluaxhpmg" path="res://source/client/gateway/ui/components/main_menu.gd" id="2_peqmd"]
@@ -16,7 +16,7 @@
 [ext_resource type="Script" uid="uid://dxa4rdqj1ukwb" path="res://source/client/gateway/ui/components/account_info.gd" id="13_i2c6x"]
 [ext_resource type="Resource" uid="uid://7ha2uyyv6r5e" path="res://source/common/resources/custom/character/character_collection/wizard.tres" id="13_rinhs"]
 [ext_resource type="Resource" uid="uid://c6lsfjv75kjph" path="res://source/common/resources/custom/character/character_collection/human.tres" id="14_x7y1p"]
-[ext_resource type="PackedScene" uid="uid://bixoc38iuwhxb" path="res://source/client/gateway/ui/components/character_creation/human_customization_panel.tscn" id="15_fym21"]
+[ext_resource type="PackedScene" uid="uid://dwmedgtqjoby3" path="res://source/client/gateway/ui/components/character_creation/human_customization_panel.tscn" id="15_fym21"]
 
 [node name="GatewayUI" type="Control"]
 layout_mode = 3
@@ -375,7 +375,6 @@ grow_horizontal = 2
 text = "Create New Character"
 
 [node name="CharacterCreation" type="Control" parent="." node_paths=PackedStringArray("class_description", "default_selection")]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -393,14 +392,20 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CharacterCreation/CenterContainer"]
 layout_mode = 2
-theme_override_constants/separation = 20
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 30
 
 [node name="HBoxContainer" type="HBoxContainer" parent="CharacterCreation/CenterContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 60
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 40
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CharacterCreation/CenterContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
@@ -427,9 +432,10 @@ layout_mode = 2
 character_class = ExtResource("14_x7y1p")
 
 [node name="VBoxContainer2" type="VBoxContainer" parent="CharacterCreation/CenterContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(260, 0)
 layout_mode = 2
-theme_override_constants/separation = 20
-alignment = 2
+size_flags_vertical = 0
+theme_override_constants/separation = 10
 
 [node name="CenterContainer" type="CenterContainer" parent="CharacterCreation/CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer2"]
 layout_mode = 2
@@ -462,8 +468,39 @@ placeholder_text = "Character name"
 layout_mode = 2
 text = "RNG"
 
-[node name="HumanCustomizationPanel" parent="CharacterCreation/CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer2" instance=ExtResource("15_fym21")]
+[node name="CreateCharacterButton" type="Button" parent="CharacterCreation/CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer2"]
+custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_hover_color = Color(0.9, 1, 0.9, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(0.8, 1, 0.8, 1)
+theme_override_font_sizes/font_size = 18
+text = "Create Character"
+
+[node name="ResultMessagePanel" type="PanelContainer" parent="CharacterCreation/CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer2"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CharacterCreation/CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer2/ResultMessagePanel"]
+layout_mode = 2
+alignment = 1
+
+[node name="ResultMessageLabel" type="Label" parent="CharacterCreation/CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer2/ResultMessagePanel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0.8, 0, 1)
+horizontal_alignment = 1
+
+[node name="ContinueButton" type="Button" parent="CharacterCreation/CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer2/ResultMessagePanel/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Continue"
+
+[node name="HumanCustomizationPanel" parent="CharacterCreation/CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer2" instance=ExtResource("15_fym21")]
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+size_flags_vertical = 0
 
 [node name="PanelContainer" type="PanelContainer" parent="CharacterCreation/CenterContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
@@ -482,12 +519,6 @@ A master of elemental forces, commanding powerful spells to devastate enemies or
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
-
-[node name="CreateCharacterButton" type="Button" parent="CharacterCreation/CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(150, 0)
-layout_mode = 2
-size_flags_horizontal = 4
-text = "Create"
 
 [node name="AccountInfo" type="VBoxContainer" parent="."]
 visible = false
@@ -561,4 +592,3 @@ text = "OK"
 [connection signal="pressed" from="WorldSelection/CenterContainer/VBoxContainer/ConfirmButton" to="WorldSelection" method="_on_confirm_button_pressed"]
 [connection signal="text_changed" from="CharacterCreation/CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer/LineEdit" to="CharacterCreation" method="_on_line_edit_text_changed"]
 [connection signal="pressed" from="CharacterCreation/CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer/Button" to="CharacterCreation" method="_on_rng_button_pressed"]
-[connection signal="pressed" from="CharacterCreation/CenterContainer/VBoxContainer/CreateCharacterButton" to="CharacterCreation" method="_on_create_character_button_pressed"]

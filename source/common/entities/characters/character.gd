@@ -9,6 +9,13 @@ enum Animations {
 	DEATH,
 }
 
+enum Direction {
+	DOWN,
+	RIGHT,
+	UP,
+	LEFT,
+}
+
 var hand_type: Hand.Types
 
 var weapon_name_right: String:
@@ -26,6 +33,11 @@ var anim: Animations = Animations.IDLE:
 
 var flipped: bool = false:
 	set = _set_flip
+
+var direction: Direction = Direction.DOWN:
+	set = _set_direction
+
+var use_directional_animations: bool = false
 
 var pivot: float = 0.0:
 	set = _set_pivot
@@ -116,22 +128,53 @@ func _set_sprite_frames(new_sprite_frames: String) -> void:
 
 
 func _set_anim(new_anim: Animations) -> void:
+	anim = new_anim
+	
+	var anim_name = ""
 	match new_anim:
 		Animations.IDLE:
-			animated_sprite.play("idle")
-			update_weapon_animation("idle")
+			anim_name = "idle"
 		Animations.RUN:
-			animated_sprite.play("run")
-			update_weapon_animation("run")
+			anim_name = "run"
 		Animations.DEATH:
-			animated_sprite.play("death")
-	anim = new_anim
+			anim_name = "death"
+	
+	# Append direction suffix if directional animations are enabled
+	if use_directional_animations and new_anim != Animations.DEATH:
+		var direction_suffix = ""
+		match direction:
+			Direction.UP:
+				direction_suffix = "_up"
+			Direction.RIGHT:
+				direction_suffix = "_right"
+			Direction.DOWN:
+				direction_suffix = "_down"
+			Direction.LEFT:
+				direction_suffix = "_left"
+		
+		# Check if the directional animation exists, otherwise fall back to the base animation
+		var directional_anim = anim_name + direction_suffix
+		if animated_sprite.sprite_frames.has_animation(directional_anim):
+			animated_sprite.play(directional_anim)
+		else:
+			animated_sprite.play(anim_name)
+	else:
+		animated_sprite.play(anim_name)
+	
+	update_weapon_animation(anim_name)
 
 
 func _set_flip(new_flip: bool) -> void:
 	animated_sprite.flip_h = new_flip
 	hand_offset.scale.x = -1 if new_flip else 1
 	flipped = new_flip
+
+
+func _set_direction(new_direction: Direction) -> void:
+	direction = new_direction
+	# If the character has direction-specific animations, update the current animation
+	if use_directional_animations:
+		_set_anim(anim)
 
 
 func _set_pivot(new_pivot: float) -> void:
@@ -151,3 +194,13 @@ func _set_spawn_state(new_state: Dictionary) -> void:
 		await ready
 	for property: String in new_state:
 		set(property, new_state[property])
+
+
+func update_direction_from_velocity(vel: Vector2) -> void:
+	if vel.length() > 0:
+		if abs(vel.x) > abs(vel.y):
+			# Horizontal movement dominates
+			direction = Direction.RIGHT if vel.x < 0 else Direction.LEFT
+		else:
+			# Vertical movement dominates
+			direction = Direction.DOWN if vel.y > 0 else Direction.UP

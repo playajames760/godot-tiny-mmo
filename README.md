@@ -86,4 +86,3 @@ You can also open an [**Issue**](https://github.com/SlayHorizon/godot-tiny-mmo-t
 
 > Code source under [**MIT License**](https://github.com/SlayHorizon/godot-tiny-mmo/blob/main/LICENSE)  
 > _For inquiries, contact me on Discord: `slayhorizon`_
-
